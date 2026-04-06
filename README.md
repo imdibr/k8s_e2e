@@ -11,7 +11,7 @@ This project provisions AWS infrastructure (VPC, EKS, EC2) using Terraform, sets
 - `infra/` — Terraform modules for VPC, EKS cluster, and Jenkins EC2 instance
 - `devops-project/` — Application source code, Dockerfiles, Jenkinsfile, and Kubernetes manifests
 - `screenshots/` — Project screenshots documenting each phase
-- `FINAL_SUBMISSION_v2.md` — Full project report
+- `document.md` — Full project report
 
 ## Tech Stack
 
