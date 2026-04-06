@@ -33,7 +33,7 @@ This project implements a production-grade DevOps infrastructure on AWS, built e
 | Containers | Docker + ECR | Frontend (nginx:alpine) + Backend (node:18-alpine) |
 | Ingress | AWS ALB | Internet-facing, path-based routing (/ → frontend, /api → backend) |
 | Autoscaling | HPA | Backend: min 1, max 2, CPU threshold 60% |
-| Storage | PVC + EBS CSI | PostgreSQL StatefulSet with 1Gi gp2 persistent volume |
+| Storage | PVC | PostgreSQL StatefulSet with 1Gi gp2 persistent volume |
 
 ---
 
@@ -162,14 +162,14 @@ devops-project/
 │   └── index.html                    # UI with fetch('/api')
 └── k8s/
     ├── namespace.yaml                # devops namespace
-    ├── configmap-secret.yaml         # APP_ENV, DB_HOST, DB_PASSWORD
+    ├── configmap-secret.yaml         # APP_ENV
     ├── deployment-backend.yaml       # 1 replica, liveness/readiness
     ├── deployment-frontend.yaml      # 1 replica, liveness/readiness
     ├── service-backend.yaml          # ClusterIP → port 3000
     ├── service-frontend.yaml         # ClusterIP → port 80
     ├── ingress.yaml                  # ALB, path-based routing
     ├── hpa.yaml                      # CPU-based autoscaling
-    └── pv-pvc.yaml                   # PostgreSQL StatefulSet + PVC
+    └── pv-pvc.yaml                   # PVC
 ```
 
 ### 4.2 Jenkinsfile — Pipeline Stages
@@ -228,7 +228,7 @@ All application resources deployed in the `devops` namespace.
 ### 5.3 Services
 
 | Service | Type | 
-|---------|------|--------------|
+|---------|------|
 | `backend-service` | ClusterIP | 
 | `frontend-service` | ClusterIP |
 
@@ -253,7 +253,7 @@ All application resources deployed in the `devops` namespace.
 | Threshold | 60% |
 
 
-### 5.6 Persistent Volume — PostgreSQL StatefulSet
+### 5.6 Persistent Volume
 
 | Setting | Value |
 |---------|-------|
@@ -302,7 +302,7 @@ Terraform infrastructure code is maintained separately in the `infra/` directory
 | Workers in private subnets | Node group deployed only in private subnets | Done |
 | Database in private subnets | PostgreSQL runs on EKS nodes in private subnets | Done |
 | Security groups — least privilege | Jenkins SG: operator IP only (dynamic detection) | Done |
-| Kubernetes Secrets for sensitive data | DB_PASSWORD, SECRET_KEY stored as K8s Secret (base64) | Done |
+| Kubernetes Secrets for sensitive data | SECRET_KEY stored as K8s Secret (base64) | Done |
 | IAM roles, not access keys | Instance Profile + IRSA — zero static keys in entire project | Done |
 | Jenkins not open to 0.0.0.0/0 | SG uses `data.http.myip` for dynamic IP restriction | Done |
 
@@ -317,9 +317,8 @@ Terraform infrastructure code is maintained separately in the `infra/` directory
 | 3 | Jenkins kubectl "access denied" | Jenkins IAM role missing EKS policies | Added EKSClusterPolicy + EKSWorkerNodePolicy to jenkins-ec2-role |
 | 4 | Frontend pod Pending → ALB 503 | t3.micro ENI limit: 4 pods/node. PostgreSQL + metrics-server consumed slots | Excluded PostgreSQL from pipeline, scaled metrics-server to 0 |
 | 5 | Jenkins unreachable after restart | Public IP changed → SG still had old IP | `terraform apply` refreshes `data.http.myip` |
-| 6 | PVC stuck in Pending state | EBS CSI Driver not yet running | Verified CSI driver add-on active, PVC bound after driver ready |
-| 7 | Pipeline deployed PostgreSQL unintentionally | Using `kubectl apply -f k8s/` applied all manifests | Changed to individual `kubectl apply -f k8s/<file>` per manifest |
-| 8 | Jenkins OOM on t3.micro | Default JVM heap too large for 1GB RAM | Set `-Xmx256m` + 2GB swap in user_data |
+| 6 | Pipeline deployed PostgreSQL unintentionally | Using `kubectl apply -f k8s/` applied all manifests | Changed to individual `kubectl apply -f k8s/<file>` per manifest |
+| 7 | Jenkins OOM on t3.micro | Default JVM heap too large for 1GB RAM | Set `-Xmx256m` + 2GB swap in user_data |
 
 ### t3.micro Pod Capacity 
 
@@ -334,7 +333,6 @@ t3.micro has 2 ENIs × 2 IPs each = **4 pod slots per node** (max-pods=4). With 
 | **backend** | devops | Application pod |
 | **frontend** | devops | Application pod |
 
-**8/8 slots used — zero spare capacity.** This required careful optimization: metrics-server scaled to 0, PostgreSQL excluded, replicas set to 1.
 
 ---
 
