@@ -80,14 +80,14 @@ Jenkins uses IAM Instance Profile. ALB Controller uses IRSA (IAM Roles for Servi
 
 | Setting | Value |
 |---------|-------|
-| AMI | Ubuntu 22.04 LTS (Jammy) |
+| AMI | Ubuntu 22.04 LTS  |
 | Instance Type | t3.micro |
 | Subnet | Public subnet 1 (10.0.0.0/24) |
 | Key Pair | `devops-key` |
 | Installed (user_data) | Java 17, Jenkins .war, Docker, kubectl, AWS CLI v2, Git, 2GB swap |
 | JVM | `-Xmx256m` (t3.micro memory optimization) |
 
-![alt text](<Screenshot 2026-04-01 at 9.08.05 PM.png>)
+![alt text](<screenshots/Screenshot 2026-04-01 at 9.08.05 PM.png>)
 Jenkins Dashboard screenshot + VPC Architecture Diagram
 
 
@@ -141,8 +141,8 @@ aws eks update-kubeconfig --name devops-intern-cluster --region ap-south-1
 ```
 
 kubectl get nodes (Ready) + kubectl get pods -n kube-system (healthy)
-![alt text](<Screenshot 2026-04-03 at 6.43.06 PM.png>)
-![alt text](<Screenshot 2026-04-03 at 6.43.19 PM.png>)
+![alt text](<screenshots/Screenshot 2026-04-03 at 6.43.06 PM.png>)
+![alt text](<screenshots/Screenshot 2026-04-03 at 6.43.19 PM.png>)
 
 ---
 
@@ -200,7 +200,7 @@ environment {
 
 **Security:** No static AWS credentials in Jenkinsfile. Authentication is handled via IAM Instance Profile attached to the Jenkins EC2 instance.
 
-![alt text](<Screenshot 2026-04-01 at 9.08.05 PM-1.png>)
+![alt text](<screenshots/Screenshot 2026-04-01 at 9.08.05 PM.png>)
 Pipeline — all stages green
 
 
@@ -267,21 +267,22 @@ All application resources deployed in the `devops` namespace.
 > **Note:** PostgreSQL StatefulSet was excluded from the Jenkins pipeline (`kubectl apply` targets individual manifests, not the entire k8s/ directory) to conserve pod capacity on t3.micro nodes. PVC was demonstrated separately in Bound state.
 
 
-![alt text](<Screenshot 2026-04-01 at 12.07.48 AM.png>)
+![alt text](<screenshots/Screenshot 2026-04-01 at 12.07.48 AM.png>)
 `kubectl get all -n devops`
 
-![alt text](<Screenshot 2026-04-01 at 1.14.07 AM.png>)
+![alt text](<screenshots/Screenshot 2026-04-01 at 1.14.07 AM.png>)
 `kubectl get ingress -n devops`
 
-![alt text](<Screenshot 2026-04-01 at 12.01.36 AM.png>)
+![alt text](<screenshots/Screenshot 2026-04-01 at 12.01.36 AM.png>)
 `kubectl get hpa -n devops`
 
-![alt text](<Screenshot 2026-04-01 at 12.30.14 AM.png>)
+![alt text](<screenshots/Screenshot 2026-04-01 at 12.30.14 AM.png>)
 `kubectl get pvc -n devops`
 
-![alt text](<Screenshot 2026-03-31 at 6.22.58 AM.png>)
+![alt text](<screenshots/Screenshot 2026-03-31 at 6.22.58 AM.png>)
 
-![alt text](<Screenshot 2026-03-31 at 6.19.14 AM.png>)
+![alt text](<screenshots/Screenshot 2026-03-31 at 6.19.14 AM.png>)
+`ALB URL`
 
 ---
 
