@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DevOps Intern Project</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+    .status { padding: 10px; border-radius: 5px; margin: 10px 0; }
+    .ok { background: #d4edda; color: #155724; }
+    .err { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <h1>DevOps Intern Project</h1>
+  <p>Deployed via Jenkins CI/CD Pipeline on EKS | Push #3</p>
+  <h2>Backend API Status:</h2>
+  <div id="status" class="status">Checking...</div>
+  <script>
+    fetch('/api')
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('status').className = 'status ok';
+        document.getElementById('status').innerText = data.message;
+      })
+      .catch(err => {
+        document.getElementById('status').className = 'status err';
+        document.getElementById('status').innerText = 'Backend unreachable';
+      });
+  </script>
+</body>
+</html>

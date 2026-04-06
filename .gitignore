@@ -1,0 +1,29 @@
+# Terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/.terraform.lock.hcl
+.terraform/
+.terraform.lock.hcl
+
+# OS
+.DS_Store
+
+# Generated docs
+*.pdf
+*.docx
+
+# Root-level screenshots (duplicates — originals in screenshots/)
+/Screenshot *.png
+
+# Other working files
+wide
+resume_imad.tex
+DEMO_PREP.md
+DEVOPS_COMMANDS.md
+PREPARATION_SUMMARY.md
+PROJECT_DEEP_DIVE.md
+FINAL_REPORT.md
+FINAL_SUBMISSION_old.html
+FINAL_SUBMISSION.html
+REQUIREMENTS_REVIEW.md
